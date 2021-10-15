@@ -52,11 +52,6 @@ class Trainer(nn.Module):
             self.globalD, ground_truth, x2_inpaint.detach())
         losses['wgan_d'] = torch.mean(local_patch_fake_pred - local_patch_real_pred) + \
             torch.mean(global_fake_pred - global_real_pred) * self.config['global_wgan_loss_alpha']
-        # gradients penalty loss
-        local_penalty = self.calc_gradient_penalty(
-            self.localD, local_patch_gt, local_patch_x2_inpaint.detach())
-        global_penalty = self.calc_gradient_penalty(self.globalD, ground_truth, x2_inpaint.detach())
-        losses['wgan_gp'] = local_penalty + global_penalty
 
         # G part
         if compute_loss_g:
@@ -75,7 +70,13 @@ class Trainer(nn.Module):
                 self.globalD, ground_truth, x2_inpaint)
             losses['wgan_g'] = - torch.mean(local_patch_fake_pred) - \
                 torch.mean(global_fake_pred) * self.config['global_wgan_loss_alpha']
-
+        
+        # gradients penalty loss
+        local_penalty = self.calc_gradient_penalty(
+            self.localD, local_patch_gt, local_patch_x2_inpaint.detach())
+        global_penalty = self.calc_gradient_penalty(self.globalD, ground_truth, x2_inpaint.detach())
+        losses['wgan_gp'] = local_penalty + global_penalty
+        
         return losses, x2_inpaint, offset_flow
 
     def dis_forward(self, netD, ground_truth, x_inpaint):
