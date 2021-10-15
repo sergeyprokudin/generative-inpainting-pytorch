@@ -3,6 +3,7 @@ import random
 import time
 import shutil
 from argparse import ArgumentParser
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -96,7 +97,7 @@ def main():
 
         time_count = time.time()
 
-        for iteration in range(start_iteration, config['niter'] + 1):
+        for iteration in tqdm(range(start_iteration, config['niter'] + 1)):
             try:
                 ground_truth = next(iterable_train_loader)
             except StopIteration:
