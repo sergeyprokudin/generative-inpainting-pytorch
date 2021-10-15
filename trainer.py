@@ -44,15 +44,6 @@ class Trainer(nn.Module):
         local_patch_x1_inpaint = local_patch(x1_inpaint, bboxes)
         local_patch_x2_inpaint = local_patch(x2_inpaint, bboxes)
 
-        # D part
-        # wgan d loss
-        local_patch_real_pred, local_patch_fake_pred = self.dis_forward(
-            self.localD, local_patch_gt, local_patch_x2_inpaint.detach())
-        global_real_pred, global_fake_pred = self.dis_forward(
-            self.globalD, ground_truth, x2_inpaint.detach())
-        losses['wgan_d'] = torch.mean(local_patch_fake_pred - local_patch_real_pred) + \
-            torch.mean(global_fake_pred - global_real_pred) * self.config['global_wgan_loss_alpha']
-
         # G part
         if compute_loss_g:
             sd_mask = spatial_discounting_mask(self.config)
@@ -70,6 +61,15 @@ class Trainer(nn.Module):
                 self.globalD, ground_truth, x2_inpaint)
             losses['wgan_g'] = - torch.mean(local_patch_fake_pred) - \
                 torch.mean(global_fake_pred) * self.config['global_wgan_loss_alpha']
+        
+        # D part
+        # wgan d loss
+        local_patch_real_pred, local_patch_fake_pred = self.dis_forward(
+            self.localD, local_patch_gt, local_patch_x2_inpaint.detach())
+        global_real_pred, global_fake_pred = self.dis_forward(
+            self.globalD, ground_truth, x2_inpaint.detach())
+        losses['wgan_d'] = torch.mean(local_patch_fake_pred - local_patch_real_pred) + \
+            torch.mean(global_fake_pred - global_real_pred) * self.config['global_wgan_loss_alpha']
         
         # gradients penalty loss
         local_penalty = self.calc_gradient_penalty(
