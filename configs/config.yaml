@@ -1,6 +1,6 @@
 # data parameters
 dataset_name: imagenet
-data_with_subfolder: True
+data_with_subfolder: False
 train_data_path: /lustre/home/sprokudin/cvpr2022_synthetic_data/easy/train/output/
 val_data_path:
 resume:
