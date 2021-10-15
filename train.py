@@ -120,11 +120,7 @@ def main():
                     losses[k] = torch.mean(losses[k])
 
             ###### Backward pass ######
-            # Update D
-            trainer_module.optimizer_d.zero_grad()
-            losses['d'] = losses['wgan_d'] + losses['wgan_gp'] * config['wgan_gp_lambda']
-            losses['d'].backward()
-            trainer_module.optimizer_d.step()
+
 
             # Update G
             if compute_g_loss:
@@ -135,6 +131,12 @@ def main():
                 losses['g'].backward()
                 trainer_module.optimizer_g.step()
 
+            # Update D
+            trainer_module.optimizer_d.zero_grad()
+            losses['d'] = losses['wgan_d'] + losses['wgan_gp'] * config['wgan_gp_lambda']
+            losses['d'].backward()
+            trainer_module.optimizer_d.step()
+            
             # Log and visualization
             log_losses = ['l1', 'ae', 'wgan_g', 'wgan_d', 'wgan_gp', 'g', 'd']
             if iteration % config['print_iter'] == 0:
