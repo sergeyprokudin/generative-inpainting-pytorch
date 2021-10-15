@@ -1,7 +1,7 @@
 # data parameters
 dataset_name: imagenet
 data_with_subfolder: True
-train_data_path: /media/ouc/4T_A/datasets/ImageNet/ILSVRC2012_img_train/
+train_data_path: /lustre/home/sprokudin/cvpr2022_synthetic_data/easy/train/output/
 val_data_path:
 resume:
 batch_size: 48
